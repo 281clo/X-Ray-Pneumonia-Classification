@@ -1,16 +1,11 @@
-# -X-Ray-Pneumonia-Classification
+# X-Ray Pneumonia Classification
 # Title
-**Authors**: Student1, Student2
+**By**: Andrew Bernklau, Carolos McCrum, Jared Mitchell
 ## Overview
 A one-paragraph overview of the project, including the business problem, data, methods, results and recommendations.
 ## Business Problem
-Summary of the business problem you are trying to solve, and the data questions that you plan to answer in order to solve them.
-***
-Questions to consider:
-* What are the business's pain points related to this project?
-* How did you pick the data analysis question(s) that you did?
-* Why are these questions important from a business perspective?
-***
+The goal of our project is to build a image classification model that can correctly identify between x-rays of infected and healthy lungs. It's important that our model has high accuracy. With a low accuracy our model would misdiagnose too much. 
+
 ## Data
 Describe the data being used for this project.
 ***
