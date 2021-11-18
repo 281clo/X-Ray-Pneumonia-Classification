@@ -11,12 +11,10 @@ The goal of our project is to build a image classification model that can correc
 Our data was five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. Our data was also consentaily and ethicly obtained. The data did contain some signifigant class imbalance. We had four times as many images of infected lungs compared to images of uninfected lungs.
 
 ## Methods
-Describe the process for analyzing or modeling the data. For Phase 1, this will be descriptive analysis.
-***
-Questions to consider:
-* How did you prepare, analyze or model the data?
-* Why is this approach appropriate given the data and the business problem?
-***
+![CNN image](https://user-images.githubusercontent.com/82346896/142509391-253d3584-9229-49d7-9fbb-fa67b224fcca.JPG)
+
+Our Model was a CNN model. The way this model works is by taking our input image, then running that image throught the tuned layers of the model, and then outputs a classification for the image. Image classification models work better with more images, so we used image augmentation within our model to effectivly train it on more images without actaully collecting more X-rays. This ended up being very helpful with our models accuracy. 
+
 ## Results
 Present your key results. For Phase 1, this will be findings from your descriptive analysis.
 ***
