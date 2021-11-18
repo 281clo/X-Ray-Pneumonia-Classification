@@ -16,23 +16,11 @@ Our data was five and a half thousand X-ray images from Guangzhou Women and Chil
 Our Model was a CNN model. The way this model works is by taking our input image, then running that image throught the tuned layers of the model, and then outputs a classification for the image. Image classification models work better with more images, so we used image augmentation within our model to effectivly train it on more images without actaully collecting more X-rays. This ended up being very helpful with our models accuracy. 
 
 ## Results
-Present your key results. For Phase 1, this will be findings from your descriptive analysis.
-***
-Questions to consider:
-* How do you interpret the results?
-* How confident are you that your results would generalize beyond the data you have?
-***
-Here is an example of how to embed images from your sub-folder:
-### Visual 1
-![graph1](./images/viz1.png)
+The final accuracy of our model was 90%. We're pretty confident in our models outcome, and are confident that it could be used to help screen patients X-rays. That being said it can't be used as a stand alone tool. The model would misdiagnose too many patients if used alone.  
+
 ## Conclusions
-Provide your conclusions about the work you've done, including any limitations or next steps.
-***
-Questions to consider:
-* What would you recommend the business do as a result of this work?
-* What are some reasons why your analysis might not fully solve the business problem?
-* What else could you do in the future to improve this project?
-***
+We recommend our model be used in tandom with a doctors opionion. The model could act as a second check to support the docter and even catch misdiagnoses from the doctor. If we wanted our model to get even closer to 100% accuracy then we would need more data. With the limited amoung of images we did it was challenging to properly train the model. On top of that, getting some demographic info on each patient could be very helpful for our model as well. Things like pre-excisting conditions and other possible risk factors for phenumonia. 
+
 ## For More Information
 Please review our full analysis in [our Jupyter Notebook](./dsc-phase1-project-template.ipynb) or our [presentation](./DS_Project_Presentation.pdf).
 For any additional questions, please contact **name & email, name & email**
