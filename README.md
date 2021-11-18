@@ -3,18 +3,13 @@
 **By**: Andrew Bernklau, Carolos McCrum, Jared Mitchell
 ## Overview
 The goal of this project is to create an image classification model that can succesffuly classify between x-rays of uninfected lungs and infected lungs. The data set we're using is a set of five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. The data has around a four to one ratio between infected lung images and uninfected lung images. After testing a few models, the model that we chose to use was a Convolutional neural network (CNN).
+
 ## Business Problem
 The goal of our project is to build a image classification model that can correctly identify between x-rays of infected and healthy lungs. It's important that our model has high accuracy. With a low accuracy our model would misdiagnose too much. 
 
 ## Data
-Describe the data being used for this project.
-***
-Questions to consider:
-* Where did the data come from, and how do they relate to the data analysis questions?
-* What do the data represent? Who is in the sample and what variables are included?
-* What is the target variable?
-* What are the properties of the variables you intend to use?
-***
+Our data was five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. Our data was also consentaily and ethicly obtained. The data did contain some signifigant class imbalance. We had four times as many images of infected lungs compared to images of uninfected lungs.
+
 ## Methods
 Describe the process for analyzing or modeling the data. For Phase 1, this will be descriptive analysis.
 ***
