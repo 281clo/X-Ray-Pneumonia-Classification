@@ -2,7 +2,7 @@
 # Title
 **By**: Andrew Bernklau, Carolos McCrum, Jared Mitchell
 ## Overview
-A one-paragraph overview of the project, including the business problem, data, methods, results and recommendations.
+The goal of this project is to create an image classification model that can succesffuly classify between x-rays of uninfected lungs and infected lungs. The data set we're using is a set of five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. The data has around a four to one ratio between infected lung images and uninfected lung images. After testing a few models, the model that we chose to use was a Convolutional neural network (CNN).
 ## Business Problem
 The goal of our project is to build a image classification model that can correctly identify between x-rays of infected and healthy lungs. It's important that our model has high accuracy. With a low accuracy our model would misdiagnose too much. 
 
