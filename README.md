@@ -29,7 +29,8 @@ Please review our full analysis in [our Jupyter Notebook](https://github.com/281
 
 ```
 ├── code                                <- Folder containing preparation of data and visuals
-├── data                                <- Folder containing all X-ray images used 
+├── data                                <- Folder containing all X-ray images used  
+├── images                              <- Folder containing images used in the notebook 
 ├── Final_Notebook.ipynb                <- Final notebook
 ├── README.md                           <- The file you're currently reading from
 ```
