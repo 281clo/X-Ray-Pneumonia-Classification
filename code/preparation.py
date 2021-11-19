@@ -76,7 +76,7 @@ def random_forest(train_img, train_y, test_img, test_y):
     return RF_model
 
 
-def first_cnn(train_img, train_y, val_img, val_y, test_img, test_y):
+def first_cnn(train_images, train_y, val_images, val_y, test_images, test_y):
     np.random.seed(123)
     model = models.Sequential()
     model.add(layers.Conv2D(32, (3, 3), activation='relu', kernel_regularizer=regularizers.l1_l2(.005))),
@@ -90,21 +90,21 @@ def first_cnn(train_img, train_y, val_img, val_y, test_img, test_y):
                 optimizer="sgd",
                 metrics=['acc'])
 
-    history = model.fit(train_img,
+    history = model.fit(train_images,
                         train_y,
                         steps_per_epoch=20,
                         epochs=20,
                         batch_size=16,
-                        validation_data=(val_img, val_y))
+                        validation_data=(val_images, val_y))
 
 
 
-    print(f"Training Score of first convolution neural network: {model.evaluate(train_img, train_y)}")
-    print(f"Test Score of first convolution neural network: {model.evaluate(test_img, test_y)}")
+    print(f"Training Score of first convolution neural network: {model.evaluate(train_images, train_y)}")
+    print(f"Test Score of first convolution neural network: {model.evaluate(test_images, test_y)}")
 
     return history
 
-def final_model(train_img, train_y, test_img, test_y, val_img, val_y):
+def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
     np.random.seed(123)
     model = models.Sequential()
     model = Sequential()
@@ -137,14 +137,16 @@ def final_model(train_img, train_y, test_img, test_y, val_img, val_y):
                 optimizer="sgd",
                 metrics=['acc'])
 
-    history = model.fit(train_img,
+    history = model.fit(train_images,
                         train_y,
                         steps_per_epoch=50,
                         epochs=20,
                         batch_size=8,
-                        validation_data=(val_img, val_y))
+                        validation_data=(val_images, val_y))
 
 
 
-    print(f"\nTraining Score: {model.evaluate(train_img, train_y)}")
-    print(f"\nTest Score: {model.evaluate(test_img, test_y)}")
+    print(f"\nTraining Score: {model.evaluate(train_images, train_y)}")
+    print(f"\nTest Score: {model.evaluate(test_images, test_y)}")
+    
+    return history

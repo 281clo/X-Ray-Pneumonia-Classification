@@ -13,7 +13,6 @@ def class_inbalance(train_labels):
             mask.append("Normal")
     print(pd.DataFrame(mask).value_counts(normalize=True))
 
-    sns.set_style('darkgrid')
     return sns.countplot(mask)
 
 def preview_img(train_images, train_y):
@@ -27,7 +26,7 @@ def preview_img(train_images, train_y):
             plt.title("Normal")
         plt.axis("off")
 
-    return plt.show()
+        return plt.show()
 
 
 def accuracy_and_losses(history):
