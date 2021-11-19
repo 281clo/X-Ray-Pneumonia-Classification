@@ -26,9 +26,7 @@ We recommend our model be used in tandem with a doctor's opinion. The model coul
 Please review our full analysis in [our Jupyter Notebook](https://github.com/281clo/X-Ray-Pneumonia-Classification/blob/main/Draft_Notebook.ipynb) or our [presentation](https://docs.google.com/presentation/d/1xeCiQLU2krOBAP_BNpBU9bXrcZJKGTksFrjdiuqu_Ck/edit?usp=sharing).
 
 ## Repository Structure
-​
-Describe the structure of your repository and its contents, for example:
-​
+
 ```
 ├── .ipynb_checkpoints                  <- Folder containing our draft notebook
 ├── data                                <- Folder containing all images used
