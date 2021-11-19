@@ -1,6 +1,6 @@
 # X-Ray Pneumonia Classification
 
-**By**: Andrew Bernklau, Carolos McCrum, Jared Mitchell
+**By**: Andrew Bernklau, Carlos McCrum, Jared Mitchell
 
 ## Overview
 The goal of this project is to create an image classification model that can successfully classify between X-rays of uninfected and infected lungs. The data set we're using is a set of five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. The data has around a four to one ratio between infected lung images and uninfected lung images. After testing a few models, the model that we chose to use was a Convolutional neural network (CNN).
