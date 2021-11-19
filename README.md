@@ -28,7 +28,7 @@ Please review our full analysis in [our Jupyter Notebook](https://github.com/281
 ## Repository Structure
 
 ```
-├── code                                <- Folder containing functions used for preparation of data and visuals
+├── code                                <- Folder containing preparation of data and visuals
 ├── data                                <- Folder containing all X-ray images used 
 ├── Final_Notebook.ipynb                <- Final notebook
 ├── README.md                           <- The file you're currently reading from
