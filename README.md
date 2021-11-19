@@ -13,7 +13,7 @@ Our data was five and a half thousand X-ray images from Guangzhou Women and Chil
 ## Methods
 ![CNN image](https://user-images.githubusercontent.com/82346896/142509391-253d3584-9229-49d7-9fbb-fa67b224fcca.JPG)
 
-Our Model was a CNN model. The way this model works is by taking our input image, then running that image through the tuned layers of the model, and then outputs a classification for the image. Image classification models work better with more images, so we used image augmentation within our model to effectively train it on more images without actually collecting more X-rays. This ended up being very helpful with our models' accuracy. 
+Our model was a CNN model. The way this model works is by taking our input image, then running that image through the tuned layers of the model, and then outputs a classification for the image. Image classification models work better with more images, so we used image augmentation within our model to effectively train it on more images without actually collecting more X-rays. This ended up being very helpful with our models' accuracy. 
 
 ## Results
 The final accuracy of our model was 91%. We're pretty confident in our model's outcome, and are confident that it could be used to help screen patients X-rays. That being said, it can't be used as a stand alone tool. The model would misdiagnose too many patients if used alone.  
