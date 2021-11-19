@@ -1,6 +1,7 @@
 # X-Ray Pneumonia Classification
-# Title
+
 **By**: Andrew Bernklau, Carolos McCrum, Jared Mitchell
+
 ## Overview
 The goal of this project is to create an image classification model that can successfully classify between x-rays of uninfected lungs and infected lungs. The data set we're using is a set of five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. The data has around a four to one ratio between infected lung images and uninfected lung images. After testing a few models, the model that we chose to use was a Convolutional neural network (CNN).
 
@@ -20,3 +21,18 @@ The final accuracy of our model was 91%. We're pretty confident in our model's o
 
 ## Conclusions
 We recommend our model be used in tandem with a doctor's opinion. The model could act as a second check to support the doctor and even catch misdiagnoses from the doctor. If we wanted our model to get even closer to 100% accuracy then we would need more data. With the limited amount of images we did it was challenging to properly train the model. On top of that, getting some demographic info on each patient could be very helpful for our model as well. Things like pre-existing conditions and other possible risk factors for pneumonia. 
+## For More Information
+
+Please review our full analysis in [our Jupyter Notebook](https://github.com/281clo/X-Ray-Pneumonia-Classification/blob/main/Draft_Notebook.ipynb) or our [presentation](https://docs.google.com/presentation/d/1xeCiQLU2krOBAP_BNpBU9bXrcZJKGTksFrjdiuqu_Ck/edit?usp=sharing).
+
+## Repository Structure
+​
+Describe the structure of your repository and its contents, for example:
+​
+```
+├── .ipynb_checkpoints                  <- Folder containing our draft notebook
+├── data                                <- Folder containing all images used
+├── .DS_Store                           <- .DS_Store
+├── Draft_Notebook.ipynb                <- Final notebook
+├── README.md                           <- The file you're currently reading from
+```
