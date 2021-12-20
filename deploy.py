@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from keras.preprocessing.image import array_to_img
 from code.preparation import img_data_gen
+from keras.models import Sequential
+from tensorflow.keras import layers, models
 np.random.seed(123)
 
 
@@ -47,6 +49,7 @@ with header:
 
 import code.preparation as prep
 import code.visualization as viz    
+import seaborn as sns
 
 with dataset:
     
@@ -64,6 +67,8 @@ with dataset:
     
 with features:
     st.header('Data Preview')
+    
+    sel_col, disp_col = st.columns(2)
 
     fig  = plt.figure(figsize=(10, 10))
     for i in range(9):
@@ -74,6 +79,72 @@ with features:
         else:
             plt.title("Normal")
         plt.axis("off")
+    sel_col.subheader('Images')
+    sel_col.markdown('A random selection of images from the dataset.')
+    sel_col.pyplot(fig)
+    
+    fig  = plt.figure(figsize=(5, 5))
+    mask = []
+    for i in train_labels:
+        if(i[1] == 1):
+            mask.append("Pneumonia")
+        else:
+            mask.append("Normal")
+    disp_col.subheader('% of Images in Each Class.')        
+    disp_col.markdown(pd.DataFrame(mask).value_counts(normalize=True))
 
-    st.pyplot(fig)
-  
+    sns.countplot(mask)
+    disp_col.pyplot(fig)
+
+with modeltraining:
+    st.header('Model Training and Testing')
+    st.markdown('This section where we will be training, tuning and testing or convolutional neural network model.')
+    
+    def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
+        np.random.seed(123)
+        model = models.Sequential()
+        model = Sequential()
+        model.add(layers.Conv2D(32 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+        model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+        model.add(layers.Dropout(0.1))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+        model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+        model.add(layers.Conv2D(128 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+        model.add(layers.Dropout(0.2))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+        model.add(layers.Conv2D(256 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+        model.add(layers.Dropout(0.2))
+        model.add(layers.BatchNormalization())
+        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+        model.add(layers.Flatten())
+        model.add(layers.Dense(units = 128 , activation = 'relu'))
+        model.add(layers.Dropout(0.2))
+        model.add(layers.Dense(units = 1 , activation = 'sigmoid'))
+        model.compile(optimizer = "rmsprop" , loss = 'binary_crossentropy' , metrics = ['accuracy'])
+
+
+        model.compile(loss='binary_crossentropy',
+                    optimizer="sgd",
+                    metrics=['acc'])
+
+        history = model.fit(train_images,
+                            train_y,
+                            steps_per_epoch=1,
+                            epochs=1,
+                            batch_size=8,
+                            validation_data=(val_images, val_y))
+
+
+
+        st.markdown(f"\nTraining Score: {model.evaluate(train_images, train_y)}")
+        st.markdown(f"\nTest Score: {model.evaluate(test_images, test_y)}")
+
+        return history
+    
+    st.write(final_model(train_images, train_y, test_images, test_y, val_images, val_y))
