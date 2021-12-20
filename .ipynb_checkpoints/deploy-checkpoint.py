@@ -10,6 +10,8 @@ from keras.preprocessing.image import array_to_img
 from code.preparation import img_data_gen
 from keras.models import Sequential
 from tensorflow.keras import layers, models
+from glob import glob
+from PIL import Image
 np.random.seed(123)
 
 
@@ -66,22 +68,32 @@ with dataset:
 
     
 with features:
+        
     st.header('Data Preview')
     
-    sel_col, disp_col = st.columns(2)
+#     sel_col, disp_col = st.columns(2)
+    st.markdown('A random selection of images from the dataset.')
+    
+    train_norm = 'data/chest_xray/train/NORMAL'
+    train_pneu = 'data/chest_xray/train/PNEUMONIA'
+    
+    train_normal_images = glob(train_norm + '/*')
+    train_pneumonia_images = glob(train_pneu + '/*')
 
-    fig  = plt.figure(figsize=(10, 10))
+    fig = plt.figure(figsize=(10, 8), dpi=80)
+    init_subplot = 230
     for i in range(9):
         ax = plt.subplot(3, 3, i + 1)
-        plt.imshow(array_to_img(train_images[i]))
-        if train_y[i] == 0:
-            plt.title("Pneumonia")
+        if i < 4:
+            img = Image.open(np.random.choice(train_normal_images)).resize((244, 244))
+            plt.title("Normal Image")
         else:
-            plt.title("Normal")
-        plt.axis("off")
-    sel_col.subheader('Images')
-    sel_col.markdown('A random selection of images from the dataset.')
-    sel_col.pyplot(fig)
+            img = Image.open(np.random.choice(train_pneumonia_images)).resize((244, 244))
+            plt.title("Pneumonia Image")
+        img = np.asarray(img)
+        plt.axis('off')
+        plt.imshow(img)
+    st.pyplot(fig)
     
     fig  = plt.figure(figsize=(5, 5))
     mask = []
@@ -90,17 +102,20 @@ with features:
             mask.append("Pneumonia")
         else:
             mask.append("Normal")
-    disp_col.subheader('% of Images in Each Class.')        
-    disp_col.markdown(pd.DataFrame(mask).value_counts(normalize=True))
+    st.sidebar.subheader('% of Images in Each Class.')        
+    st.sidebar.markdown(pd.DataFrame(mask).value_counts(normalize=True))
 
     sns.countplot(mask)
-    disp_col.pyplot(fig)
+    st.sidebar.pyplot(fig)
 
 with modeltraining:
-    st.header('Model Training and Testing')
-    st.markdown('This section where we will be training, tuning and testing or convolutional neural network model.')
     
     def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
+        st.header('Model Training and Testing')
+        st.markdown('This section where we will be training, tuning and testing or convolutional neural network model.')
+
+        epochs = st.selectbox('Choose how many epochs to run. (Each Epoch added adds to training time!)', options=[1,2,3,4,5,6,7,8,9,10], index=0)
+        step_per_epoch =  st.selectbox('Choose the amount of steps for each epoch', options=[1,2,3,4,5,6,7,8,9,10], index=0)
         np.random.seed(123)
         model = models.Sequential()
         model = Sequential()
@@ -135,8 +150,8 @@ with modeltraining:
 
         history = model.fit(train_images,
                             train_y,
-                            steps_per_epoch=1,
-                            epochs=1,
+                            steps_per_epoch=step_per_epoch,
+                            epochs=epochs,
                             batch_size=8,
                             validation_data=(val_images, val_y))
 
@@ -144,7 +159,8 @@ with modeltraining:
 
         st.markdown(f"\nTraining Score: {model.evaluate(train_images, train_y)}")
         st.markdown(f"\nTest Score: {model.evaluate(test_images, test_y)}")
-
+    
         return history
+
     
     st.write(final_model(train_images, train_y, test_images, test_y, val_images, val_y))
