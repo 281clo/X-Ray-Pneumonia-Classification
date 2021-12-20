@@ -7,6 +7,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import pandas as pd
 from keras.preprocessing.image import array_to_img
+from code.preparation import img_data_gen
 np.random.seed(123)
 
 
@@ -24,9 +25,9 @@ def Load_Xray_Images___Will_take_some_time_but_should_only_need_to_run_once___ET
     np.random.seed(123)
     train_gen, test_gen, val_gen = img_data_gen(train_path, test_path, val_path)
 
-    val_images, val_labels = tqdm(next(val_gen))
-    test_images, test_labels = tqdm(next(test_gen))
-    train_images, train_labels = tqdm(next(train_gen))
+    val_images, val_labels = next(val_gen)
+    test_images, test_labels = next(test_gen)
+    train_images, train_labels = next(train_gen)
 
     return test_images, train_images, val_images, val_labels, test_labels, train_labels
 

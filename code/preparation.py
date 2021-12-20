@@ -13,6 +13,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 
 
+
 def img_data_gen(train_path, test_path, val_path):
     # get all the data in the directory split/train (5216 images), and reshape them
     train_generator = ImageDataGenerator(rescale=1./255, shear_range = 0.2, zoom_range = 0.2).flow_from_directory(
@@ -151,23 +152,3 @@ def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
     
     return history
 
-train_path = 'data/chest_xray/train/'
-test_path = 'data/chest_xray/test/'
-val_path = 'data/chest_xray/val'
-np.random.seed(123)
-train_gen, test_gen, val_gen = img_data_gen(train_path, test_path, val_path)
-
-val_images, val_labels = tqdm(next(val_gen))
-test_images, test_labels = tqdm(next(test_gen))
-train_images, train_labels = tqdm(next(train_gen))
-
-data_aug = prep.data_aug()
-data_aug.fit(train_images)
-
-train_img = train_images.reshape(train_images.shape[0], -1)
-test_img = test_images.reshape(test_images.shape[0], -1)
-val_img = val_images.reshape(val_images.shape[0], -1)
-
-train_y = np.reshape(train_labels[:,0], (5217,1))
-test_y = np.reshape(test_labels[:,0], (624,1))
-val_y = np.reshape(val_labels[:,0], (16,1))
