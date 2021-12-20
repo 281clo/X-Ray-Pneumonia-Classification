@@ -13,6 +13,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 
 
+
 def img_data_gen(train_path, test_path, val_path):
     # get all the data in the directory split/train (5216 images), and reshape them
     train_generator = ImageDataGenerator(rescale=1./255, shear_range = 0.2, zoom_range = 0.2).flow_from_directory(
@@ -150,3 +151,4 @@ def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
     print(f"\nTest Score: {model.evaluate(test_images, test_y)}")
     
     return history
+
