@@ -12,6 +12,12 @@ from keras.models import Sequential
 from tensorflow.keras import layers, models
 from glob import glob
 from PIL import Image
+import joblib
+import pickle
+from tensorflow import keras
+from tensorflow.keras.models import load_model
+import tensorflow_hub as hub
+from tensorflow.keras import preprocessing
 np.random.seed(123)
 
 
@@ -107,60 +113,53 @@ with features:
 
     sns.countplot(mask)
     st.sidebar.pyplot(fig)
-
-with modeltraining:
     
-    def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
-        st.header('Model Training and Testing')
-        st.markdown('This section where we will be training, tuning and testing or convolutional neural network model.')
+fig = plt.figure()
 
-        epochs = st.selectbox('Choose how many epochs to run. (Each Epoch added adds to training time!)', options=[1,2,3,4,5,6,7,8,9,10], index=0)
-        step_per_epoch =  st.selectbox('Choose the amount of steps for each epoch', options=[1,2,3,4,5,6,7,8,9,10], index=0)
-        np.random.seed(123)
-        model = models.Sequential()
-        model = Sequential()
-        model.add(layers.Conv2D(32 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
-        model.add(layers.BatchNormalization())
-        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-        model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
-        model.add(layers.Dropout(0.1))
-        model.add(layers.BatchNormalization())
-        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-        model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
-        model.add(layers.BatchNormalization())
-        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-        model.add(layers.Conv2D(128 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
-        model.add(layers.Dropout(0.2))
-        model.add(layers.BatchNormalization())
-        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-        model.add(layers.Conv2D(256 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
-        model.add(layers.Dropout(0.2))
-        model.add(layers.BatchNormalization())
-        model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-        model.add(layers.Flatten())
-        model.add(layers.Dense(units = 128 , activation = 'relu'))
-        model.add(layers.Dropout(0.2))
-        model.add(layers.Dense(units = 1 , activation = 'sigmoid'))
-        model.compile(optimizer = "rmsprop" , loss = 'binary_crossentropy' , metrics = ['accuracy'])
+def main():
+    file_uploaded = st.file_uploader("Choose File", type=["png","jpg","jpeg"])
+    class_btn = st.button("Classify")
+    if file_uploaded is not None:    
+        image = Image.open(file_uploaded)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+        
+    if class_btn:
+        if file_uploaded is None:
+            st.write("Invalid command, please upload an image")
+        else:
+            with st.spinner('Model working....'):
+                plt.imshow(image)
+                plt.axis("off")
+                predictions = predict(image)
+                time.sleep(1)
+                st.success('Classified')
+                st.write(predictions)
+                st.pyplot(fig)
 
 
-        model.compile(loss='binary_crossentropy',
-                    optimizer="sgd",
-                    metrics=['acc'])
-
-        history = model.fit(train_images,
-                            train_y,
-                            steps_per_epoch=step_per_epoch,
-                            epochs=epochs,
-                            batch_size=8,
-                            validation_data=(val_images, val_y))
-
-
-
-        st.markdown(f"\nTraining Score: {model.evaluate(train_images, train_y)}")
-        st.markdown(f"\nTest Score: {model.evaluate(test_images, test_y)}")
-    
-        return history
+def predict(image):
+    classifier_model = "final_cnn_model.h5"
+    IMAGE_SHAPE = (224, 224,3)
+    model = load_model(classifier_model, compile=False)
+#     test_image = image.resize((224,224))
+#     test_image = preprocessing.image.img_to_array(test_image)
+#     test_image = test_image /255
+#     test_image = np.expand_dims(test_image, axis=0)
+    class_names = [
+          'Normal',
+          'Pneumonia']
+    predictions = model.predict(image)
+    scores = tf.nn.softmax(predictions[0])
+    scores = scores.numpy()
+    results = {
+          'Normal': 0,
+          'Pneumonia': 0
+}
 
     
-    st.write(final_model(train_images, train_y, test_images, test_y, val_images, val_y))
+    result = f"{class_names[np.argmax(scores)]} with a { (100 * np.max(scores)).round(2) } % confidence." 
+    return result
+
+
+if __name__ == "__main__":
+    main()

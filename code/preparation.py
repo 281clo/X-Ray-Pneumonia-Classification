@@ -16,19 +16,29 @@ from keras.preprocessing.image import ImageDataGenerator
 
 def img_data_gen(train_path, test_path, val_path):
     # get all the data in the directory split/train (5216 images), and reshape them
-    train_generator = ImageDataGenerator(rescale=1./255, shear_range = 0.2, zoom_range = 0.2).flow_from_directory(
+    train_generator = ImageDataGenerator(rescale=1./255,
+                                   rotation_range=40,
+                                   width_shift_range=0.2,
+                                   height_shift_range=0.2,
+                                   shear_range=0.2,
+                                   zoom_range=0.2,
+                                   horizontal_flip=True,
+                                   fill_mode='nearest').flow_from_directory(
             train_path,
-            batch_size=5217)
+            batch_size=5217,
+            target_size=(256, 256))
 
     # get all the data in the directory chest_xray/test (624 images), and reshape them
     test_generator = ImageDataGenerator(rescale=1./255).flow_from_directory(
             test_path,
-            batch_size = 624) 
+            batch_size = 624,
+            target_size=(256, 256)) 
 
     # get all the data in the directory split/validation (16 images), and reshape them
     val_generator = ImageDataGenerator(rescale=1./255).flow_from_directory(
             val_path,
-            batch_size = 16)
+            batch_size = 16,
+            target_size=(256, 256))
 
     
 
@@ -42,22 +52,6 @@ def create_sets(train_gen, test_gen, val_gen):
 
     return (train_images, train_labels), (test_images, test_labels), (val_images, val_labels)
 
-def data_aug():
-    dataAug = ImageDataGenerator(
-        featurewise_center=False,  # set input mean to 0 over the dataset
-        samplewise_center=False,  # set each sample mean to 0
-        featurewise_std_normalization=False,  # divide inputs by std of the dataset
-        samplewise_std_normalization=False,  # divide each input by its std
-        zca_whitening=False,  # apply ZCA whitening
-        rotation_range = 45,  # randomly rotate images in the range (degrees, 0 to 180)
-        zoom_range = 0.2, # Randomly zoom image 
-        width_shift_range=0.15,  # randomly shift images horizontally (fraction of total width)
-        height_shift_range=0.15,  # randomly shift images vertically (fraction of total height)
-        horizontal_flip = True,  # randomly flip images
-        vertical_flip=False)  # randomly flip images
-
-
-    return dataAug
 
 def logistic_regression_l2(train_img, train_y, test_img, test_y):
     log = LogisticRegression(penalty='l2')
@@ -144,9 +138,7 @@ def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
                         epochs=20,
                         batch_size=8,
                         validation_data=(val_images, val_y))
-
-
-
+    
     print(f"\nTraining Score: {model.evaluate(train_images, train_y)}")
     print(f"\nTest Score: {model.evaluate(test_images, test_y)}")
     
