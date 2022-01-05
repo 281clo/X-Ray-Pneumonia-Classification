@@ -1,6 +1,5 @@
 from sklearn.linear_model import LogisticRegression
 import numpy as np  
-from tqdm import tqdm 
 import warnings
 warnings.filterwarnings('ignore')
 import tensorflow as tf
@@ -10,45 +9,53 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 from keras import regularizers
 from keras.preprocessing.image import ImageDataGenerator
+from sklearn.utils import class_weight
+from tensorflow.keras.optimizers import SGD
+from keras.callbacks import ModelCheckpoint
 
 
+class_weights = {0: 1.9444858420268256, 1: 0.6730719628578798}
 
 
 def img_data_gen(train_path, test_path, val_path):
-    # get all the data in the directory split/train (5216 images), and reshape them
-    train_generator = ImageDataGenerator(rescale=1./255,
-                                   rotation_range=40,
-                                   width_shift_range=0.2,
-                                   height_shift_range=0.2,
-                                   shear_range=0.2,
-                                   zoom_range=0.2,
-                                   horizontal_flip=True,
-                                   fill_mode='nearest').flow_from_directory(
-            train_path,
-            batch_size=5217,
-            target_size=(256, 256))
+    
+    train_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(train_path,
+                                                                                  batch_size=5217,
+                                                                                  target_size=(260, 260))
 
     # get all the data in the directory chest_xray/test (624 images), and reshape them
-    test_generator = ImageDataGenerator(rescale=1./255).flow_from_directory(
-            test_path,
-            batch_size = 624,
-            target_size=(256, 256)) 
+    test_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(test_path,
+                                                                            batch_size = 624,
+                                                                            target_size=(260, 260)) 
 
     # get all the data in the directory split/validation (16 images), and reshape them
-    val_generator = ImageDataGenerator(rescale=1./255).flow_from_directory(
-            val_path,
-            batch_size = 16,
-            target_size=(256, 256))
+    val_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(val_path,
+                                                                           batch_size = 16,
+                                                                           target_size=(260, 260))
+    return train_gen, test_gen, val_gen
 
+def img_data_gen_batched(train_path, test_path, val_path):
     
+    train_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(train_path,
+                                                                                  batch_size=4,
+                                                                                  target_size=(260, 260))
 
-    return train_generator, test_generator, val_generator
+    # get all the data in the directory chest_xray/test (624 images), and reshape them
+    test_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(test_path,
+                                                                            batch_size = 4,
+                                                                            target_size=(260, 260)) 
+
+    # get all the data in the directory split/validation (16 images), and reshape them
+    val_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(val_path,
+                                                                           batch_size = 4,
+                                                                           target_size=(260, 260))
+    return train_gen, test_gen, val_gen
 
 def create_sets(train_gen, test_gen, val_gen):
 
-    train_images, train_labels = tqdm(next(train_gen))
-    test_images, test_labels = tqdm(next(test_gen))
-    val_images, val_labels = tqdm(next(val_gen))
+    train_images, train_labels = next(train_gen)
+    test_images, test_labels = next(test_gen)
+    val_images, val_labels = next(val_gen)
 
     return (train_images, train_labels), (test_images, test_labels), (val_images, val_labels)
 
@@ -94,53 +101,64 @@ def first_cnn(train_images, train_y, val_images, val_y, test_images, test_y):
 
 
 
-    print(f"Training Score of first convolution neural network: {model.evaluate(train_images, train_y)}")
-    print(f"Test Score of first convolution neural network: {model.evaluate(test_images, test_y)}")
+    print(f"Training Score of first convolution neural network: {model.evaluate(train_images, train_y)[1]}")
+    print(f"Test Score of first convolution neural network: {model.evaluate(test_images, test_y)[1]}")
 
     return history
 
-def final_model(train_images, train_y, test_images, test_y, val_images, val_y):
-    np.random.seed(123)
+def final_model(train_gen, val_gen, test_gen):
+
     model = models.Sequential()
-    model = Sequential()
-    model.add(layers.Conv2D(32 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.Conv2D(32, (3,3), padding = 'same', input_shape=(260, 260, 3)))
     model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-    model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.MaxPool2D((2,2) , padding = 'valid'))
+
+    model.add(layers.RandomTranslation(height_factor=0.1, width_factor=0.1))
+    model.add(layers.RandomFlip())
+
+    model.add(layers.Conv2D(64 , (3,3) , padding = 'valid'))
     model.add(layers.Dropout(0.1))
     model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-    model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.MaxPool2D((2,2) , padding = 'valid'))
+    
+    model.add(layers.Conv2D(128 , (3,3) , padding = 'valid'))
+    model.add(layers.Dropout(0.1))
     model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-    model.add(layers.Conv2D(128 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.MaxPool2D((2,2) , padding = 'valid'))
+
+    model.add(layers.Conv2D(256 , (3,3) , padding = 'valid'))
     model.add(layers.Dropout(0.2))
     model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
-    model.add(layers.Conv2D(256 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
-    model.add(layers.Dropout(0.2))
-    model.add(layers.BatchNormalization())
-    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(layers.MaxPool2D((2,2) , padding = 'valid'))
+    
     model.add(layers.Flatten())
-    model.add(layers.Dense(units = 128 , activation = 'relu'))
-    model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(units = 1 , activation = 'sigmoid'))
-    model.compile(optimizer = "rmsprop" , loss = 'binary_crossentropy' , metrics = ['accuracy'])
+    model.add(layers.Dense(128, activation='relu'))
+    model.add(layers.Dropout(0.15))
+    model.add(layers.Dense(2, activation='sigmoid'))
 
 
-    model.compile(loss='binary_crossentropy',
-                optimizer="sgd",
-                metrics=['acc'])
+    model.build([None, 260, 260, 3])
+    model.summary()
 
-    history = model.fit(train_images,
-                        train_y,
-                        steps_per_epoch=50,
-                        epochs=20,
-                        batch_size=8,
-                        validation_data=(val_images, val_y))
+    model.compile(loss='binary_crossentropy', 
+                  metrics=['accuracy'],
+                  optimizer=SGD(.0001, .9))
     
-    print(f"\nTraining Score: {model.evaluate(train_images, train_y)}")
-    print(f"\nTest Score: {model.evaluate(test_images, test_y)}")
+    filepath = 'Models/model.epoch{epoch:02d}-loss{val_loss:.2f}.h5'
+    checkpoint = ModelCheckpoint(filepath=filepath, 
+                             monitor='val_loss',
+                             verbose=1, 
+                             save_best_only=False,
+                             mode='min')
+
+    history = model.fit(train_gen,
+              steps_per_epoch=train_gen.n // train_gen.batch_size,
+              epochs=25,
+              validation_data=val_gen,
+              validation_steps=val_gen.n // val_gen.batch_size,
+              class_weight=class_weights,
+              callbacks=checkpoint)
+
     
-    return history
+    return history, model
 
