@@ -91,7 +91,7 @@ with modeltraining:
         st.pyplot(fig)
             
                 
-                
+    @st.cache(suppress_st_warning=True)            
     def predict_image(pic):
 
         img = img_to_array(pic)
