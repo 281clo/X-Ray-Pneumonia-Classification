@@ -62,46 +62,34 @@ with modeltraining:
     st.markdown('Here we can test the model to see how it performs. Please choose from the list of images down below, either NORMAL or PNEUMONIA and the model with try to classify that image. With our model being almost 90% accurate it should get most, if not all of images in this sample test set correct')
     fig = plt.figure()
     
-    @st.cache(suppress_st_warning=True)
-    def main():
-        path = st.selectbox("Choose File", options=['data/chest_xray/test/PNEUMONIA/person1_virus_11.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_12.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_13.jpeg', 'data/chest_xray/test/PNEUMONIA/person137_bacteria_655.jpeg', 'data/chest_xray/test/PNEUMONIA/person10_virus_35.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_8.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_9.jpeg', 'data/chest_xray/test/NORMAL/IM-0001-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0081-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0005-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0006-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0070-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0003-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0101-0001.jpeg'], index=0)
-  
-        img = image.load_img(path, target_size=(260, 260))
-        st.image(img, caption='Image Uploaded', use_column_width=True)
 
-        st.spinner('Model working....')
-        plt.imshow(img)
-        plt.axis("off")
-        predictions = predict_image(img)
-        time.sleep(1)
-        st.success('Classified')
-        st.write(predictions)
-        st.pyplot(fig)
-            
-                
-    @st.cache(suppress_st_warning=True)            
-    def predict_image(pic):
+    path = st.selectbox("Choose File", options=['data/chest_xray/test/PNEUMONIA/person1_virus_11.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_12.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_13.jpeg', 'data/chest_xray/test/PNEUMONIA/person137_bacteria_655.jpeg', 'data/chest_xray/test/PNEUMONIA/person10_virus_35.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_8.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_9.jpeg', 'data/chest_xray/test/NORMAL/IM-0001-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0081-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0005-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0006-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0070-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0003-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0101-0001.jpeg'], index=0)
 
-        img = img_to_array(pic)
-        img = np.expand_dims(img, axis=0)
-        img = tf.keras.applications.vgg16.preprocess_input(img)
-        model = load_model('Models/best_model.h5', compile=False)
-        predictions = model.predict(img)
-        class_names = [
-                  'Normal',
-                  'Pneumonia']
+    img = image.load_img(path, target_size=(260, 260))
+    st.image(img, caption='Image Uploaded', use_column_width=True)
+    plt.imshow(img)
+    plt.axis("off")
+    time.sleep(1)
+    st.success('Classified')
 
-        scores = tf.nn.softmax(predictions[0]).numpy()
-        results = {
-                  'Normal': 0,
-                  'Pneumonia': 0
-        }
+    img = img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img = tf.keras.applications.vgg16.preprocess_input(img)
+    model = load_model('Models/best_model.h5', compile=False)
+    predictions = model.predict(img)
+    st.write(predictions)
+    class_names = [
+              'Normal',
+              'Pneumonia']
+
+    scores = tf.nn.softmax(predictions[0]).numpy()
+    results = {
+              'Normal': 0,
+              'Pneumonia': 0
+    }
 
 
-        result = f"Model classified image as - {class_names[np.argmax(scores)]} - with a { (100 * np.max(scores)).round(2) } % confidence."
-        return result
+    result = f"Model classified image as - {class_names[np.argmax(scores)]} - with a { (100 * np.max(scores)).round(2) } % confidence."
+    st.write(result)
 
 
-@st.cache(suppress_st_warning=True)  
-if __name__ == "__main__":
-    main()
