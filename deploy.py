@@ -3,29 +3,17 @@ import numpy as np
 import warnings
 import os
 warnings.filterwarnings('ignore')
-from sklearn.metrics import plot_confusion_matrix
-from tqdm import tqdm 
 import matplotlib.pyplot as plt
 import pandas as pd
 import code.preparation as prep
 import code.visualization as viz    
-import seaborn as sns
-from keras.preprocessing.image import array_to_img
-from code.preparation import img_data_gen
-from keras.models import Sequential
-from tensorflow.keras import layers, models
-from glob import glob
 from PIL import Image
 import joblib
-import pickle
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import load_model
-import tensorflow_hub as hub
-from tensorflow.keras import preprocessing
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.utils import img_to_array
-import requests
 import time
 
 np.random.seed(123)
@@ -114,6 +102,6 @@ with modeltraining:
         return result
 
 
-
+@st.cache(suppress_st_warning=True)  
 if __name__ == "__main__":
     main()
