@@ -73,7 +73,8 @@ with modeltraining:
     st.header('Model Predictor')
     st.markdown('Here we can test the model to see how it performs. Please choose from the list of images down below, either NORMAL or PNEUMONIA and the model with try to classify that image. With our model being almost 90% accurate it should get most, if not all of images in this sample test set correct')
     fig = plt.figure()
-
+    
+    @st.cache
     def main():
         path = st.selectbox("Choose File", options=['data/chest_xray/test/PNEUMONIA/person1_virus_11.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_12.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_13.jpeg', 'data/chest_xray/test/PNEUMONIA/person137_bacteria_655.jpeg', 'data/chest_xray/test/PNEUMONIA/person10_virus_35.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_8.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_9.jpeg', 'data/chest_xray/test/NORMAL/IM-0001-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0081-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0005-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0006-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0070-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0003-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0101-0001.jpeg'], index=0)
   
