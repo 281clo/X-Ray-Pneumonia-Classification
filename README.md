@@ -4,7 +4,7 @@
 
 **By**: Andrew Bernklau, Carlos McCrum, Jared Mitchell
 
-#### Preview Deployment: https://share.streamlit.io/281clo/x-ray-pneumonia-classification/Carlos/deploy.py
+#### Preview Deployment: https://share.streamlit.io/281clo/x-ray-pneumonia-classification/main/deploy.py
 
 
 ## Overview
