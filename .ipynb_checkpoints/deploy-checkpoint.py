@@ -3,29 +3,17 @@ import numpy as np
 import warnings
 import os
 warnings.filterwarnings('ignore')
-from sklearn.metrics import plot_confusion_matrix
-from tqdm import tqdm 
 import matplotlib.pyplot as plt
 import pandas as pd
 import code.preparation as prep
 import code.visualization as viz    
-import seaborn as sns
-from keras.preprocessing.image import array_to_img
-from code.preparation import img_data_gen
-from keras.models import Sequential
-from tensorflow.keras import layers, models
-from glob import glob
 from PIL import Image
 import joblib
-import pickle
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import load_model
-import tensorflow_hub as hub
-from tensorflow.keras import preprocessing
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.utils import img_to_array
-import requests
 import time
 
 np.random.seed(123)
@@ -71,33 +59,25 @@ with features:
 
 with modeltraining:
     st.header('Model Predictor')
-    st.markdown('Here we can test the model to see how it performs. Please choose from the list of images down below, either NORMAL or PNEUMONIA and the model with try to classify that image. With our model being 89% accurate it should get most, if not all of images in this sample test set correct')
+    st.markdown('Here we can test the model to see how it performs. Please choose from the list of images down below, either NORMAL or PNEUMONIA and the model with try to classify that image. With our model being almost 90% accurate it should get most, if not all of images in this sample test set correct')
     fig = plt.figure()
+    
 
-    def main():
-        path = st.selectbox("Choose File", options=['data/chest_xray/test/PNEUMONIA/person1_virus_11.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_12.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_13.jpeg', 'data/chest_xray/test/PNEUMONIA/person137_bacteria_655.jpeg', 'data/chest_xray/test/PNEUMONIA/person10_virus_35.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_8.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_9.jpeg', 'data/chest_xray/test/NORMAL/IM-0001-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0081-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0005-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0006-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0070-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0003-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0101-0001.jpeg'], index=0)
-  
-        img = image.load_img(path, target_size=(260, 260))
-        st.image(img, caption='Image Uploaded', use_column_width=True)
+    path = st.selectbox("Choose File", options=['data/chest_xray/test/PNEUMONIA/person1_virus_11.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_12.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_13.jpeg', 'data/chest_xray/test/PNEUMONIA/person137_bacteria_655.jpeg', 'data/chest_xray/test/PNEUMONIA/person10_virus_35.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_8.jpeg', 'data/chest_xray/test/PNEUMONIA/person1_virus_9.jpeg', 'data/chest_xray/test/NORMAL/IM-0001-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0081-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0005-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0006-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0070-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0003-0001.jpeg', 'data/chest_xray/test/NORMAL/IM-0101-0001.jpeg'], index=0)
 
-        st.spinner('Model working....')
-        plt.imshow(img)
-        plt.axis("off")
-        predictions = predict_image(img)
-        time.sleep(1)
-        st.success('Classified')
-        st.write(predictions)
-        st.pyplot(fig)
-            
-                
-                
-def predict_image(pic):
-#     img = image.load_img(pic, target_size=(224, 224))
-    img = img_to_array(pic)
+    img = image.load_img(path, target_size=(260, 260))
+    st.image(img, caption='Image Uploaded', use_column_width=True)
+    plt.imshow(img)
+    plt.axis("off")
+    time.sleep(1)
+    st.success('Classified')
+
+    img = img_to_array(img)
     img = np.expand_dims(img, axis=0)
     img = tf.keras.applications.vgg16.preprocess_input(img)
     model = load_model('Models/best_model.h5', compile=False)
     predictions = model.predict(img)
+    st.write(predictions)
     class_names = [
               'Normal',
               'Pneumonia']
@@ -108,11 +88,8 @@ def predict_image(pic):
               'Pneumonia': 0
     }
 
-    
+
     result = f"Model classified image as - {class_names[np.argmax(scores)]} - with a { (100 * np.max(scores)).round(2) } % confidence."
-    return result
+    st.write(result)
 
 
-
-if __name__ == "__main__":
-    main()
