@@ -16,7 +16,7 @@ The goal of our project is to build an image classification model that can corre
 ![EDA visual](images/EDA_visual.png)
 
 ## Data
-Our data was five and a half thousand X-ray images from Guangzhou Women and Children’s Medical Center. Our data was also consentaily and ethically obtained. The data did contain some significant class imbalance. We had four times as many images of infected lungs compared to images of uninfected lungs.
+Our data was five and a half thousand pediatric X-ray images from Guangzhou Women and Children’s Medical Center. Our data was also consensually and ethically obtained. The data did contain some significant class imbalance. We had four times as many images of infected lungs compared to images of uninfected lungs.
 
 ## Methods
 
@@ -32,6 +32,8 @@ We recommend our model be used in tandem with a doctor's opinion. The model coul
 ## For More Information
 
 Please review our full analysis in [our Jupyter Notebook](https://github.com/281clo/X-Ray-Pneumonia-Classification/blob/main/Draft_Notebook.ipynb) or our [presentation](https://docs.google.com/presentation/d/1xeCiQLU2krOBAP_BNpBU9bXrcZJKGTksFrjdiuqu_Ck/edit?usp=sharing).
+
+Kermany, Daniel; Zhang, Kang; Goldbaum, Michael (2018), “Labeled Optical Coherence Tomography (OCT) and Chest X-Ray Images for Classification”, Mendeley Data, v2
 
 ## Repository Structure
 
