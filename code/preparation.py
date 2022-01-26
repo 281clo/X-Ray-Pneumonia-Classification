@@ -1,4 +1,4 @@
-from sklearn.linear_model import LogisticRegression
+
 import numpy as np  
 import warnings
 warnings.filterwarnings('ignore')
@@ -6,12 +6,14 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from keras.models import Sequential
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 from keras import regularizers
 from keras.preprocessing.image import ImageDataGenerator
 from sklearn.utils import class_weight
 from tensorflow.keras.optimizers import SGD
 from keras.callbacks import ModelCheckpoint
+from sklearn.metrics import f1_score
 
 
 class_weights = {0: 1.9444858420268256, 1: 0.6730719628578798}
@@ -19,36 +21,42 @@ class_weights = {0: 1.9444858420268256, 1: 0.6730719628578798}
 
 def img_data_gen(train_path, test_path, val_path):
     
-    train_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(train_path,
+    train_gen = ImageDataGenerator(rescale=1./255).flow_from_directory(train_path,
                                                                                   batch_size=5217,
-                                                                                  target_size=(260, 260))
+                                                                                  target_size=(256,256),
+                                                                                  color_mode = 'grayscale')
 
     # get all the data in the directory chest_xray/test (624 images), and reshape them
-    test_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(test_path,
+    test_gen = ImageDataGenerator(rescale=1./255).flow_from_directory(test_path,
                                                                             batch_size = 624,
-                                                                            target_size=(260, 260)) 
+                                                                            target_size=(256,256),
+                                                                            color_mode = 'grayscale') 
 
     # get all the data in the directory split/validation (16 images), and reshape them
-    val_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(val_path,
+    val_gen = ImageDataGenerator(rescale=1./255).flow_from_directory(val_path,
                                                                            batch_size = 16,
-                                                                           target_size=(260, 260))
+                                                                           target_size=(256,256),
+                                                                           color_mode = 'grayscale')
     return train_gen, test_gen, val_gen
 
 def img_data_gen_batched(train_path, test_path, val_path):
     
-    train_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(train_path,
-                                                                                  batch_size=4,
-                                                                                  target_size=(260, 260))
+    train_gen = ImageDataGenerator(rescale=1./255).flow_from_directory(train_path,
+                                                                       batch_size=16,
+                                                                       target_size=(256,256),
+                                                                       color_mode = 'grayscale')
 
     # get all the data in the directory chest_xray/test (624 images), and reshape them
-    test_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(test_path,
-                                                                            batch_size = 4,
-                                                                            target_size=(260, 260)) 
+    test_gen = ImageDataGenerator(rescale=1./255).flow_from_directory(test_path,
+                                                                      batch_size = 16,
+                                                                      target_size=(256,256),
+                                                                      color_mode = 'grayscale') 
 
     # get all the data in the directory split/validation (16 images), and reshape them
-    val_gen = ImageDataGenerator(rescale=1./255, preprocessing_function=tf.keras.applications.vgg16.preprocess_input).flow_from_directory(val_path,
-                                                                           batch_size = 4,
-                                                                           target_size=(260, 260))
+    val_gen = ImageDataGenerator(rescale=1./255).flow_from_directory(val_path,
+                                                                     batch_size = 4,
+                                                                     target_size=(256,256),
+                                                                     color_mode = 'grayscale')
     return train_gen, test_gen, val_gen
 
 def create_sets(train_gen, test_gen, val_gen):
@@ -63,7 +71,7 @@ def create_sets(train_gen, test_gen, val_gen):
 def logistic_regression_l2(train_img, train_y, test_img, test_y):
     log = LogisticRegression(penalty='l2')
     log.fit(train_img, train_y)
-    print(f'Test score of logistic regression model with L2 regularization: {log.score(test_img, test_y)}')
+    print(f'Accuracy test score of logistic regression model with L2 regularization: {log.score(test_img, test_y)}')
 
     return log
 
@@ -73,7 +81,7 @@ def random_forest(train_img, train_y, test_img, test_y):
                                n_estimators= 700, random_state=777,max_features='log2')
     RF_model.fit(train_img, train_y)
     print(f'Cross validation score for Random Forest: {cross_val_score(RF_model, test_img, test_y, cv=5)}')
-    print(f'Test score of random forest model: {RF_model.score(test_img, test_y)}')
+    print(f'Accuracy test score of random forest model: {RF_model.score(test_img, test_y)}')
 
     return RF_model
 
@@ -90,7 +98,7 @@ def first_cnn(train_images, train_y, val_images, val_y, test_images, test_y):
 
     model.compile(loss='binary_crossentropy',
                 optimizer="sgd",
-                metrics=['acc'])
+                metrics=[tf.keras.metrics.PrecisionAtRecall(0.5)])
 
     history = model.fit(train_images,
                         train_y,
@@ -98,8 +106,6 @@ def first_cnn(train_images, train_y, val_images, val_y, test_images, test_y):
                         epochs=20,
                         batch_size=16,
                         validation_data=(val_images, val_y))
-
-
 
     print(f"Training Score of first convolution neural network: {model.evaluate(train_images, train_y)[1]}")
     print(f"Test Score of first convolution neural network: {model.evaluate(test_images, test_y)[1]}")
@@ -109,7 +115,7 @@ def first_cnn(train_images, train_y, val_images, val_y, test_images, test_y):
 def final_model(train_gen, val_gen, test_gen):
 
     model = models.Sequential()
-    model.add(layers.Conv2D(32, (3,3), padding = 'same', input_shape=(260, 260, 3)))
+    model.add(layers.Conv2D(32, (3,3), padding = 'same', input_shape=(256, 256, 1)))
     model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D((2,2) , padding = 'valid'))
 
@@ -137,11 +143,11 @@ def final_model(train_gen, val_gen, test_gen):
     model.add(layers.Dense(2, activation='sigmoid'))
 
 
-    model.build([None, 260, 260, 3])
+    model.build([None, 256, 256, 3])
     model.summary()
 
     model.compile(loss='binary_crossentropy', 
-                  metrics=['accuracy'],
+                  metrics=[tf.keras.metrics.PrecisionAtRecall(0.5)],
                   optimizer=SGD(.0001, .9))
     
     filepath = 'Models/model.epoch{epoch:02d}-loss{val_loss:.2f}.h5'
@@ -152,12 +158,12 @@ def final_model(train_gen, val_gen, test_gen):
                              mode='min')
 
     history = model.fit(train_gen,
-              steps_per_epoch=train_gen.n // train_gen.batch_size,
-              epochs=25,
-              validation_data=val_gen,
-              validation_steps=val_gen.n // val_gen.batch_size,
-              class_weight=class_weights,
-              callbacks=checkpoint)
+                        steps_per_epoch=train_gen.n // train_gen.batch_size,
+                        epochs=25,
+                        validation_data=val_gen,
+                        validation_steps=val_gen.n // val_gen.batch_size,
+                        class_weight=class_weights,
+                        callbacks=checkpoint)
 
     
     return history
