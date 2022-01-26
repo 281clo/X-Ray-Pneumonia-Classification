@@ -4,7 +4,7 @@
 
 **By**: Andrew Bernklau, Carlos McCrum, Jared Mitchell
 
-#### Preview Deployment: https://share.streamlit.io/281clo/x-ray-pneumonia-classification/main/deploy.py
+#### Preview Deployment: https://share.streamlit.io/281clo/pneumonia_deployment/main/deploy.py
 
 
 ## Overview
@@ -25,7 +25,7 @@ Our model was a CNN model. The way this model works is by taking our input image
 ![CNN image](https://user-images.githubusercontent.com/82346896/142509391-253d3584-9229-49d7-9fbb-fa67b224fcca.JPG)
 
 ## Results
-The final accuracy of our model was 91%. We're pretty confident in our model's outcome, and are confident that it could be used to help screen patients X-rays. That being said, it can't be used as a stand alone tool. The model would misdiagnose too many patients if used alone.  
+The final accuracy of our model was 90% with a 98% precision at a .5 recall rate. We're pretty confident in our model's outcome, and are confident that it could be used to help screen patients X-rays. That being said, it can't be used as a stand alone tool. The model would misdiagnose too many patients if used alone.  
 
 ## Conclusions
 We recommend our model be used in tandem with a doctor's opinion. The model could act as a second check to support the doctor and even catch misdiagnoses from the doctor. If we wanted our model to get even closer to 100% accuracy then we would need more data. With the limited amount of images we did it was challenging to properly train the model. On top of that, getting some demographic info on each patient could be very helpful for our model as well. Things like pre-existing conditions and other possible risk factors for pneumonia. 
